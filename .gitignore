@@ -48,5 +48,45 @@
 .tmp_versions/
 modules.order
 Module.symvers
+sdkconfig
+component.mk
 Mkfile.old
 dkms.conf
+*.vscode
+sdkconfig.old
+*.DS_Store
+# Ignore build results
+*.projbuild
+build/
+build/log/
+# IAR Debug Obj
+/Obj/*.pbd
+/Obj/*.pbd.*
+/Obj/*.pbi
+/Obj/*.pbi.*
+
+# Log files
+*.ninja_log
+*ninja_deps
+/build.ninja_deps
+*.lock
+
+
+# Compiled Binaries
+*.bin
+*.elf
+*.hex
+*.map
+
+# Created by git when using merge tools for conflicts
+*.BACKUP.*
+*.BASE.*
+*.LOCAL.*
+*.REMOTE.*
+*_BACKUP_*.txt
+*_BASE_*.txt
+*_LOCAL_*.txt
+*_REMOTE_*.txt
+
+# macOS Finder incidental files
+.DS_Store
