@@ -11,10 +11,6 @@
 #include "esp_adc/adc_oneshot.h"
 #include "esp_err.h"
 
-typedef struct {
-    uint8_t sensor_id;
-    int16_t humidity;
-} yl69_reading_t;
 
 typedef struct {
     adc_channel_t channel;
@@ -22,7 +18,6 @@ typedef struct {
     adc_atten_t atten;
     adc_unit_t unit; 
     uint32_t read_interval_ms;  
-    QueueHandle_t queue;    
     uint8_t sensor_id; 
     uint8_t priority;
 } yl69_config_t;
@@ -33,13 +28,12 @@ typedef struct {
     .atten = ADC_ATTEN_DB_12,        \
     .unit = ADC_UNIT_1,              \
     .read_interval_ms = 1000,        \
-    .queue = NULL,                   \
     .sensor_id = 0,                  \
     .priority = 1,               \
 }
 
 esp_err_t yl69_init(yl69_config_t *config);
 int yl69_read_raw(adc_channel_t channel);
-int yl69_read_percentage(adc_channel_t channel);
+void yl69_read_percentage(adc_channel_t channel, int *humidity);
 
 #endif // YL69_H

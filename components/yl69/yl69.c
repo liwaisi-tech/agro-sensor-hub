@@ -61,7 +61,7 @@ int yl69_read_raw(adc_channel_t channel) {
     return raw_value;
 }
 
-int yl69_read_percentage(adc_channel_t channel) {
-    return map_value(yl69_read_raw(channel));
+void yl69_read_percentage(adc_channel_t channel, int *humidity) {
+    *humidity = map_value(yl69_read_raw(channel));
 }
 
