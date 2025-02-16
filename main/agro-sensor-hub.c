@@ -33,9 +33,9 @@ void app_main(void)
         ESP_LOGI(TAG, "Dato recibido humedad suelo cajon %d  valor: %d", cfg_sensor_hub.sensor_id_Yl69,data.humGroud1);
         read_data_DHT22(&cfg_sensor_hub);
         data.humidity1 = cfg_sensor_hub.readingDHT22.humidity;
-        data.temperature1 = cfg_sensor_hub.readingYL69.temperature; 
-        ESP_LOGI(TAG, "Dato recibido temperatura cajon %d  valor: %d", cfg_sensor_hub.sensor_id_Yl69,data.temperature1);
-        ESP_LOGI(TAG, "Dato recibido humedad cajon %d  valor: %d", cfg_sensor_hub.sensor_id_Yl69,data.humidity1);
+        data.temperature1 = cfg_sensor_hub.readingDHT22.temperature; 
+        ESP_LOGI(TAG, "Dato recibido temperatura cajon %d  valor: %f", cfg_sensor_hub.sensor_id_Yl69, data.temperature1);
+        ESP_LOGI(TAG, "Dato recibido humedad cajon %d  valor: %f", cfg_sensor_hub.sensor_id_Yl69, data.humidity1);
        // Leer sensores cajon 2
         cfg_sensor_hub.sensor_id_Yl69 = ID2YL69;
         cfg_sensor_hub.channel_Yl69 = CHANNEL2_Yl69;
