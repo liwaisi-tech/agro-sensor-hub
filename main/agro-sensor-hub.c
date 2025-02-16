@@ -1,7 +1,11 @@
 #include <stdio.h>
 #include "tempHumidity.h"
 #include "readDataSensor.h"
-
+#include "queueManager.h"
+#include "taskProcessor.h"
+#include "pinController.h"
+#include "webSocketHandler.h"
+#include "esp_log.h"
 
 static const char *TAG = "agro-sensor-hub";
 #define DHT22_TYPE 1
@@ -16,8 +20,49 @@ static const char *TAG = "agro-sensor-hub";
 #define QUEUE_SIZE 10  // Define el tamaño de la cola
 QueueHandle_t queue_mediciones;  // Declara la variable global para la cola de mediciones
 
+static esp_err_t init_queues_and_tasks(void) {
+    esp_err_t ret;
+
+    // Inicializar colas
+    ret = init_queues();
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to initialize queues");
+        return ret;
+    }
+
+    // Inicializar tareas
+    ret = init_task_processor();
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to initialize task processor");
+        return ret;
+    }
+
+    ret = init_pin_controller();
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to initialize pin controller");
+        return ret;
+    }
+
+    ret = init_websocket_handler();
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to initialize websocket handler");
+        return ret;
+    }
+
+    ESP_LOGI(TAG, "All queues and tasks initialized successfully");
+    return ESP_OK;
+}
+
 void app_main(void)
 {
+    // Inicialización de colas y tareas (comentado por ahora)
+    /*
+    esp_err_t ret = init_queues_and_tasks();
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "Failed to initialize system");
+        return;
+    }
+    */
     
     while (1) {
         tempHumidity_t data; 
