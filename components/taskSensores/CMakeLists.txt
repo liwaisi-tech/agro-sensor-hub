@@ -5,4 +5,5 @@ idf_component_register(SRCS "taskSensores.c"
     REQUIRES "queueManager"
     REQUIRES "tempHumidity"
     REQUIRES "dht"
+    REQUIRES "yl69"
 )

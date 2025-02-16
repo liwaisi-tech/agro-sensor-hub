@@ -1,9 +1,9 @@
 #include <stdio.h>
-#include "queue_manager.h"
+#include "queueManager.h"
 #include "esp_log.h"
 #include "tempHumidity.h"
 
-static const char *TAG = "queue_manager";
+static const char *TAG = "queueManager";
 
 // Definición de los handles de las colas
 QueueHandle_t queue_mediciones = NULL;
