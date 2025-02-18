@@ -2,8 +2,8 @@
 #include "tempHumidity.h"
 #include "queueManager.h"
 #include "taskProcessor.h"
-#include "pinController.h"
-#include "webSocketHandler.h"
+#include "taskPinController.h"
+#include "taskWebSocketHandler.h"
 #include "taskSensores.h"
 #include <esp_log.h>
 

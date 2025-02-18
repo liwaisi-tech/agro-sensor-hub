@@ -1,11 +1,11 @@
-#include "pinController.h"
+#include "taskPinController.h"
 #include "queueManager.h"
 #include "tempHumidity.h"
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
-static const char *TAG = "pin_controller";
+static const char *TAG = "task_pin_controller";
 
 #define PIN_CONTROLLER_STACK_SIZE 2048
 #define PIN_CONTROLLER_PRIORITY 7
