@@ -7,15 +7,96 @@
 
 static const char *TAG = "task_pin_controller";
 
-#define PIN_CONTROLLER_STACK_SIZE 2048
-#define PIN_CONTROLLER_PRIORITY 7
+#define PIN_LED 25  // Define el pin donde está conectado el LED
+#define NUM_SENSORS 3
+#define PIN_CONTROLLER_STACK_SIZE 2048  // Define el tamaño de la pila
+#define PIN_CONTROLLER_PRIORITY 7         // Define la prioridad de la tarea
+gpio_num_t led_pin = GPIO_NUM_2;
+
+esp_err_t pin_controller_config(pin_controller_t *controller, gpio_num_t led_pin) {
+    if (controller == NULL) {
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    // Configurar el pin del LED como salida
+    gpio_config_t io_conf = {
+        .pin_bit_mask = (1ULL << led_pin),
+        .mode = GPIO_MODE_OUTPUT,
+        .pull_up_en = GPIO_PULLUP_DISABLE,
+        .pull_down_en = GPIO_PULLDOWN_DISABLE,
+        .intr_type = GPIO_INTR_DISABLE
+    };
+
+    esp_err_t ret = gpio_config(&io_conf);
+    if (ret != ESP_OK) {
+        return ret;
+    }
+
+    // Inicializar la estructura del controlador
+    controller->led_pin = led_pin;
+    controller->led_state = false;
+    controller->last_humidity_average = 0.0f;
+
+    // Asegurar que el LED comience apagado
+    gpio_set_level(led_pin, 0);
+    return ESP_OK;
+}
+
+float calculate_humidity_average(const int *humidity_readings, size_t num_readings) {
+    if (humidity_readings == NULL || num_readings == 0) {
+        return 0.0f;
+    }
+
+    float sum = 0.0f;
+    for (size_t i = 0; i < num_readings; i++) {
+        sum += humidity_readings[i];
+    }
+
+    return sum / num_readings;
+}
+
+esp_err_t update_led_state(pin_controller_t *controller, float humidity_average) {
+    if (controller == NULL) {
+        return ESP_ERR_INVALID_ARG;
+    }
+
+    // Guardar el último promedio calculado
+    controller->last_humidity_average = humidity_average;
+
+    // Lógica de control del LED
+    bool should_led_be_on = false;
+
+    if (humidity_average <= HUMIDITY_LOW_THRESHOLD) {
+        // Si la humedad es muy baja, encender el LED
+        should_led_be_on = true;
+    } else if (controller->led_state) {
+        // Si el LED está encendido, solo apagarlo cuando la humedad esté en el rango objetivo
+        should_led_be_on = !(humidity_average >= HUMIDITY_HIGH_THRESHOLD_MIN && 
+                           humidity_average <= HUMIDITY_HIGH_THRESHOLD_MAX);
+    }
+
+    // Actualizar el estado del LED solo si es necesario
+    if (should_led_be_on != controller->led_state) {
+        controller->led_state = should_led_be_on;
+        gpio_set_level(controller->led_pin, should_led_be_on ? 1 : 0);
+    }
+
+    return ESP_OK;
+}
 
 static void pin_control_task(void *pvParameters) {
-    tempHumidity_t sensor_data;
-
+    int reading_groud[NUM_SENSORS]; // Array para almacenar las lecturas de los 3 sensores
+    tempHumidity_t sensor_data; 
+    pin_controller_t controller;
+    float average = 0;
+    pin_controller_config(&controller, led_pin);
     while (1) {
         if (xQueueReceive(queue_control_pines, &sensor_data, portMAX_DELAY) == pdTRUE) {
-            ESP_LOGI(TAG, "Llamar lógica de pines acá.");
+            reading_groud[0] = sensor_data.humGroud1;
+            reading_groud[1] = sensor_data.humGroud2;
+            reading_groud[2] = sensor_data.humGroud3; 
+            average = calculate_humidity_average(reading_groud, NUM_SENSORS);
+            update_led_state(&controller,average);
         }
     }
 }

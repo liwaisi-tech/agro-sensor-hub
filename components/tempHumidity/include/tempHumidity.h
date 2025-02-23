@@ -4,12 +4,11 @@
 
 typedef struct
 {
-    float temperature1;
-    float humidity1;
-    float temperature2;
-    float humidity2;
     int humGroud1;
     int humGroud2;
+    int humGroud3;
+    float temperature;
+    float humidity;
 } tempHumidity_t;
 
 char* convert_to_json_string(tempHumidity_t* data);

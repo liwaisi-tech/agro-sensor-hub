@@ -47,18 +47,18 @@ static void task_sensores(void *pvParameters) {
     sensor_data.humGroud2 = 0; 
     while (1) {
         // Leer sensores
-        sensorAmbiente(SENSOR_TYPE, GPIO_PIN1DHT, &sensor_data.temperature1, &sensor_data.humidity1);
-        sensorAmbiente(SENSOR_TYPE, GPIO_PIN2DHT, &sensor_data.temperature2, &sensor_data.humidity2);
+        sensorAmbiente(SENSOR_TYPE, GPIO_PIN1DHT, &sensor_data.temperature, &sensor_data.humidity);
         sensorHumedadSuelo(CHANNEL1_Yl69, &sensor_data.humGroud1);
         sensorHumedadSuelo(CHANNEL2_Yl69, &sensor_data.humGroud2);
+        sensorHumedadSuelo(CHANNEL2_Yl69, &sensor_data.humGroud3);
         // sensorHumedadSuelo1(&sensor_data.humGroud1);
         // sensorHumedadSuelo2(&sensor_data.humGroud2);
         // sensorAmbiente2(&sensor_data.temperature2, &sensor_data.humidity2);
 
-        ESP_LOGI(TAG, "Lecturas: Suelo1=%d%%, Suelo2=%d%%, T1=%.1f°C, H1=%.1f%%, T2=%.1f°C, H2=%.1f%%",
+        ESP_LOGI(TAG, "Lecturas: Suelo1=%d%%, Suelo2=%d%%, Suelo3=%d%%, H=%.1f%%, T=%.1f°C",
                  sensor_data.humGroud1, sensor_data.humGroud2,
-                 sensor_data.temperature1, sensor_data.humidity1,
-                 sensor_data.temperature2, sensor_data.humidity2);
+                 sensor_data.humGroud3, sensor_data.humidity,
+                 sensor_data.temperature);
 
         // Enviar a la cola de mediciones
         if (xQueueSend(queue_mediciones, &sensor_data, pdMS_TO_TICKS(100)) != pdTRUE) {
