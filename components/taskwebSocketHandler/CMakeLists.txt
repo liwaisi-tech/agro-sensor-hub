@@ -1,4 +1,4 @@
-idf_component_register(SRCS "pinController.c"
+idf_component_register(SRCS "taskWebSocketHandler.c"
     INCLUDE_DIRS "include"
     REQUIRES "freertos"
     REQUIRES "esp_common"
