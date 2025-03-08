@@ -8,11 +8,11 @@
 
 #include "esp_err.h"
 #include "driver/gpio.h"
+#include "tempHumidity.h"
 
 // Constantes para los umbrales de humedad
-#define HUMIDITY_LOW_THRESHOLD    20
-#define HUMIDITY_HIGH_THRESHOLD_MIN   60
-#define HUMIDITY_HIGH_THRESHOLD_MAX   65
+#define HUMIDITY_LOW_THRESHOLD    55
+#define HUMIDITY_HIGH_THRESHOLD_MAX   75
 
 // Estructura para mantener el estado del controlador
 typedef struct {
@@ -45,6 +45,6 @@ float calculate_humidity_average(const int *humidity_readings, size_t num_readin
  * @param humidity_average Promedio actual de humedad
  * @return ESP_OK si la actualización fue exitosa
  */
-esp_err_t update_led_state(pin_controller_t *controller, float humidity_average);
+esp_err_t update_led_state(pin_controller_t *controller, tempHumidity_t *sensor_data);
 
 #endif // TASK_PIN_CONTROLLER_H

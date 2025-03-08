@@ -49,7 +49,6 @@ int yl69_read_raw(adc_channel_t channel) {
 
     int raw_value;
     esp_err_t ret = adc_oneshot_read(adc_handle, channel, &raw_value);
-    ESP_LOGI(TAG, "***Lectura raw:=%d", raw_value);
     // Manejo de errores
     if (ret == ESP_ERR_TIMEOUT) {
         ESP_LOGE(TAG, "Error de tiempo de espera al leer el ADC en el canal %d", channel);

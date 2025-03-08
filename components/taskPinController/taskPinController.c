@@ -1,17 +1,16 @@
 #include "taskPinController.h"
 #include "queueManager.h"
-#include "tempHumidity.h"
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
 static const char *TAG = "task_pin_controller";
 
-#define PIN_LED 25  // Define el pin donde está conectado el LED
-#define NUM_SENSORS 3
+#define NUM_SENSORS 2 // este va en el archivo de configuración
 #define PIN_CONTROLLER_STACK_SIZE 4096  // Define el tamaño de la pila
 #define PIN_CONTROLLER_PRIORITY 7         // Define la prioridad de la tarea
-gpio_num_t led_pin = GPIO_NUM_2;
+
+gpio_num_t led_pin = GPIO_NUM_2; // Define el pin donde está conectado el LED
 
 esp_err_t pin_controller_config(pin_controller_t *controller, gpio_num_t led_pin) {
     if (controller == NULL) {
@@ -55,25 +54,36 @@ float calculate_humidity_average(const int *humidity_readings, size_t num_readin
     return sum / num_readings;
 }
 
-esp_err_t update_led_state(pin_controller_t *controller, float humidity_average) {
-    if (controller == NULL) {
+/**
+ * @brief Valida si algún valor de humedad está por debajo o es igual al umbral bajo
+ * @param sensor_data Estructura que contiene las lecturas de humedad
+ * @return true si algún valor está por debajo o es igual al umbral, false en caso contrario
+ */
+bool is_any_humidity_below_threshold(tempHumidity_t *sensor_data) {
+    float reading_groud[NUM_SENSORS]; // Array para almacenar las lecturas de los 3 sensores
+    // Verificar que el puntero no sea nulo y que haya sensores
+    if (sensor_data == NULL) {
+        return false; // O manejar el error según sea necesario
+    }
+    reading_groud[0]= sensor_data->humGroud1;
+    reading_groud[1] = sensor_data->humGroud2;
+    // Validar cada uno de los valores de humedad
+    for (size_t i = 0; i < NUM_SENSORS; i++) {
+        if (reading_groud[i] <= HUMIDITY_LOW_THRESHOLD) {
+            return true; // Retornar true si se encuentra un valor por debajo del umbral
+        }
+    }
+
+    return false; // Retornar false si no se encontró ningún valor por debajo del umbral
+} 
+
+esp_err_t update_led_state(pin_controller_t *controller, tempHumidity_t *sensor_data) {
+    if (controller == NULL || sensor_data == NULL) {
         return ESP_ERR_INVALID_ARG;
     }
 
-    // Guardar el último promedio calculado
-    controller->last_humidity_average = humidity_average;
-
-    // Lógica de control del LED
-    bool should_led_be_on = false;
-
-    if (humidity_average <= HUMIDITY_LOW_THRESHOLD) {
-        // Si la humedad es muy baja, encender el LED
-        should_led_be_on = true;
-    } else if (controller->led_state) {
-        // Si el LED está encendido, solo apagarlo cuando la humedad esté en el rango objetivo
-        should_led_be_on = !(humidity_average >= HUMIDITY_HIGH_THRESHOLD_MIN && 
-                           humidity_average <= HUMIDITY_HIGH_THRESHOLD_MAX);
-    }
+    // Verificar si algún sensor de humedad está por debajo del umbral
+    bool should_led_be_on = is_any_humidity_below_threshold(sensor_data);
 
     // Actualizar el estado del LED solo si es necesario
     if (should_led_be_on != controller->led_state) {
@@ -85,18 +95,12 @@ esp_err_t update_led_state(pin_controller_t *controller, float humidity_average)
 }
 
 static void pin_control_task(void *pvParameters) {
-    int reading_groud[NUM_SENSORS]; // Array para almacenar las lecturas de los 3 sensores
     tempHumidity_t sensor_data; 
     pin_controller_t controller;
-    float average = 0;
     pin_controller_config(&controller, led_pin);
     while (1) {
         if (xQueueReceive(queue_control_pines, &sensor_data, portMAX_DELAY) == pdTRUE) {
-            reading_groud[0] = sensor_data.humGroud1;
-            reading_groud[1] = sensor_data.humGroud2;
-            reading_groud[2] = sensor_data.humGroud3; 
-            average = calculate_humidity_average(reading_groud, NUM_SENSORS);
-            update_led_state(&controller,average);
+            update_led_state(&controller, &sensor_data);
         }
     }
 }
@@ -118,4 +122,5 @@ esp_err_t init_pin_controller(void) {
 
     ESP_LOGI(TAG, "Pin controller task initialized successfully");
     return ESP_OK;
-} 
+}
+

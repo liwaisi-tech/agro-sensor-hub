@@ -6,7 +6,6 @@ typedef struct
 {
     int humGroud1;
     int humGroud2;
-    int humGroud3;
     float temperature;
     float humidity;
 } tempHumidity_t;

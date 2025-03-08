@@ -12,7 +12,6 @@ char* convert_to_json_string(tempHumidity_t* data) {
 
     cJSON_AddNumberToObject(json, "humGroud1", data->humGroud1);
     cJSON_AddNumberToObject(json, "humGroud2", data->humGroud2);
-    cJSON_AddNumberToObject(json, "humGroud3", data->humGroud3);
     cJSON_AddNumberToObject(json, "temperature", data->temperature);
     cJSON_AddNumberToObject(json, "humidity", data->humidity);
 
