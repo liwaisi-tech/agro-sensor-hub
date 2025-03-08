@@ -4,4 +4,5 @@ idf_component_register(SRCS "taskPinController.c"
     REQUIRES "esp_common"
     REQUIRES "queueManager"
     REQUIRES "tempHumidity"
+    REQUIRES "esp_driver_gpio"
 ) 

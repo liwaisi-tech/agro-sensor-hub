@@ -19,8 +19,8 @@ static void process_sensor_data(void *pvParameters) {
     while (1) {
         // Esperar datos de los sensores
         if (xQueueReceive(queue_mediciones, &sensor_data, portMAX_DELAY) == pdTRUE) {
-            ESP_LOGI(TAG, "Received sensor data - Temp: %.2f, Humidity: %d", 
-                     sensor_data.temperature1, sensor_data.humGroud1);
+            ESP_LOGI(TAG, "Received sensor data - Temp: %.2f, Humidity: %f", 
+                    sensor_data.temperature, sensor_data.humidity);
 
             // Enviar a cola de websocket
             if (xQueueSend(queue_websocket, &sensor_data, 0) != pdTRUE) {
