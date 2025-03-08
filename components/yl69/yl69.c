@@ -9,14 +9,15 @@ static adc_oneshot_unit_handle_t adc_handle;
 static bool adc_initialized = false;
 
 
-#define SENSOR_MAX_VALUE 4095
-#define SENSOR_MIN_VALUE 0
+#define VALUE_WHEN_DRY 4095  // Valor cuando el sensor está seco
+#define VALUE_WHEN_WET 800  // Valor cuando el sensor está en agua
 #define HUMIDITY_MAX 100
 #define HUMIDITY_MIN 0
 
 static int map_value(int value) {
-    return (value - SENSOR_MIN_VALUE) * (HUMIDITY_MIN - HUMIDITY_MAX) / 
-           (SENSOR_MAX_VALUE - SENSOR_MIN_VALUE) + HUMIDITY_MAX;
+    
+    return (value - VALUE_WHEN_DRY) * (HUMIDITY_MAX - HUMIDITY_MIN) / 
+           (VALUE_WHEN_WET - VALUE_WHEN_DRY) + HUMIDITY_MIN;
 }
 
 esp_err_t yl69_init(yl69_config_t *config) {
@@ -48,7 +49,7 @@ int yl69_read_raw(adc_channel_t channel) {
 
     int raw_value;
     esp_err_t ret = adc_oneshot_read(adc_handle, channel, &raw_value);
-    
+    ESP_LOGI(TAG, "***Lectura raw:=%d", raw_value);
     // Manejo de errores
     if (ret == ESP_ERR_TIMEOUT) {
         ESP_LOGE(TAG, "Error de tiempo de espera al leer el ADC en el canal %d", channel);

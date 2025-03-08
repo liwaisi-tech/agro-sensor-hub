@@ -9,7 +9,7 @@ static const char *TAG = "task_pin_controller";
 
 #define PIN_LED 25  // Define el pin donde está conectado el LED
 #define NUM_SENSORS 3
-#define PIN_CONTROLLER_STACK_SIZE 2048  // Define el tamaño de la pila
+#define PIN_CONTROLLER_STACK_SIZE 4096  // Define el tamaño de la pila
 #define PIN_CONTROLLER_PRIORITY 7         // Define la prioridad de la tarea
 gpio_num_t led_pin = GPIO_NUM_2;
 
