@@ -48,9 +48,9 @@ static void task_sensores(void *pvParameters) {
     while (1) {
         // Leer sensores
         sensorAmbiente(SENSOR_TYPE, GPIO_PIN1DHT, &sensor_data.temperature, &sensor_data.humidity);
+
         sensorHumedadSuelo(CHANNEL1_Yl69, &sensor_data.humGroud1);
         sensorHumedadSuelo(CHANNEL2_Yl69, &sensor_data.humGroud2);
-        sensorAmbiente(SENSOR_TYPE,GPIO_PIN1DHT,&sensor_data.temperature, &sensor_data.humidity);
 
         ESP_LOGI(TAG, "Lecturas: Suelo1=%d%%, Suelo2=%d%%, H=%.1f%%, T=%.1f°C",
                  sensor_data.humGroud1, sensor_data.humGroud2,

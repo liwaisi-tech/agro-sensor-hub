@@ -9,7 +9,7 @@ static adc_oneshot_unit_handle_t adc_handle;
 static bool adc_initialized = false;
 
 
-#define VALUE_WHEN_DRY 4095  // Valor cuando el sensor está seco
+#define VALUE_WHEN_DRY 3096  // Valor cuando el sensor está seco
 #define VALUE_WHEN_WET 800  // Valor cuando el sensor está en agua
 #define HUMIDITY_MAX 100
 #define HUMIDITY_MIN 0
@@ -57,7 +57,7 @@ int yl69_read_raw(adc_channel_t channel) {
         ESP_LOGE(TAG, "Error al leer el ADC: %d", ret);
         return -1; // O manejar el error de otra manera
     }
-
+    //ESP_LOGI(TAG, "**RAW_DATA: %d", raw_value);
     return raw_value;
 }
 

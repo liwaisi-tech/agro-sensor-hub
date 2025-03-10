@@ -11,7 +11,7 @@
 #include "tempHumidity.h"
 
 // Constantes para los umbrales de humedad
-#define HUMIDITY_LOW_THRESHOLD    55
+#define HUMIDITY_LOW_THRESHOLD    50
 #define HUMIDITY_HIGH_THRESHOLD_MAX   75
 
 // Estructura para mantener el estado del controlador
