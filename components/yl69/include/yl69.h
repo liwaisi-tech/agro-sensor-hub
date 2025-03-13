@@ -11,7 +11,11 @@
 #include "esp_adc/adc_oneshot.h"
 #include "esp_err.h"
 
-
+typedef enum
+{
+    TYPE_YL69 = 0,   //!< YL69
+    TYPE_CAP,      //!< Capacitivo
+} groud_sensor_type_t;
 typedef struct {
     adc_channel_t channel;
     adc_bitwidth_t bitwidth;
@@ -20,6 +24,8 @@ typedef struct {
     uint32_t read_interval_ms;  
     uint8_t sensor_id; 
     uint8_t priority;
+    groud_sensor_type_t sensor_type;
+    
 } yl69_config_t;
 
 #define YL69_DEFAULT_CONFIG { \
@@ -30,10 +36,11 @@ typedef struct {
     .read_interval_ms = 1000,        \
     .sensor_id = 0,                  \
     .priority = 1,               \
+    .sensor_type = TYPE_YL69,  \
 }
 
 esp_err_t yl69_init(yl69_config_t *config);
 int yl69_read_raw(adc_channel_t channel);
-void yl69_read_percentage(adc_channel_t channel, int *humidity);
+void yl69_read_percentage(adc_channel_t channel, int *humidity, groud_sensor_type_t sensor_type);
 
 #endif // YL69_H

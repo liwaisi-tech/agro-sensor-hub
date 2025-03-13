@@ -4,20 +4,22 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
+
+#define VALUE_WHEN_DRY_CAP 2865  // Valor cuando el sensor Capacitio está seco
+#define VALUE_WHEN_WET_CAP 1220 // Valor cuando el sensor capacitivo está en agua
+#define VALUE_WHEN_DRY_YL 3096  // Valor cuando el sensor YL está seco
+#define VALUE_WHEN_WET_YL 800 // Valor cuando el sensor YL está en agua
+#define HUMIDITY_MAX 100
+#define HUMIDITY_MIN 0
+
 static const char *TAG = "YL69";
 static adc_oneshot_unit_handle_t adc_handle;
 static bool adc_initialized = false;
 
+static int map_value(int value, int value_when_dry, int value_when_wet) {
 
-#define VALUE_WHEN_DRY 3096  // Valor cuando el sensor está seco
-#define VALUE_WHEN_WET 800  // Valor cuando el sensor está en agua
-#define HUMIDITY_MAX 100
-#define HUMIDITY_MIN 0
-
-static int map_value(int value) {
-    
-    return (value - VALUE_WHEN_DRY) * (HUMIDITY_MAX - HUMIDITY_MIN) / 
-           (VALUE_WHEN_WET - VALUE_WHEN_DRY) + HUMIDITY_MIN;
+    return (value - value_when_dry) * (HUMIDITY_MAX - HUMIDITY_MIN) / 
+           (value_when_wet - value_when_dry) + HUMIDITY_MIN;
 }
 
 esp_err_t yl69_init(yl69_config_t *config) {
@@ -57,11 +59,22 @@ int yl69_read_raw(adc_channel_t channel) {
         ESP_LOGE(TAG, "Error al leer el ADC: %d", ret);
         return -1; // O manejar el error de otra manera
     }
-    //ESP_LOGI(TAG, "**RAW_DATA: %d", raw_value);
+    ESP_LOGI(TAG, "**RAW_DATA: %d", raw_value);
     return raw_value;
 }
 
-void yl69_read_percentage(adc_channel_t channel, int *humidity) {
-    *humidity = map_value(yl69_read_raw(channel));
+void yl69_read_percentage(adc_channel_t channel, int *humidity, groud_sensor_type_t sensor_type) {
+
+    int value_when_dry;
+    int value_when_wet;
+    if (sensor_type==TYPE_YL69){
+        value_when_dry = VALUE_WHEN_DRY_YL;
+        value_when_wet = VALUE_WHEN_WET_YL;
+    }
+    else{
+        value_when_dry = VALUE_WHEN_DRY_CAP;
+        value_when_wet = VALUE_WHEN_WET_CAP;
+    }
+    *humidity = map_value(yl69_read_raw(channel),value_when_dry,value_when_wet);
 }
 

@@ -12,7 +12,7 @@ static const char *TAG = "task_sensores";
 
 #define TASK_SENSORES_STACK_SIZE 4096
 #define TASK_SENSORES_PRIORITY 10
-#define SENSOR_READ_DELAY_MS 5000
+#define SENSOR_READ_DELAY_MS 30000
 #define SENSOR_TYPE DHT_TYPE_AM2301
 #define GPIO_PIN2DHT 33
 #define GPIO_PIN1DHT 32
@@ -23,11 +23,12 @@ static const char *TAG = "task_sensores";
     *humedad = 65; // Simulando 65% de humedad
 }*/
 
-static void sensorHumedadSuelo(adc_channel_t channel, int *humedad) {
+static void sensorHumedadSuelo(adc_channel_t channel, int *humedad, groud_sensor_type_t sensor_type) {
     yl69_config_t cfg_YL69 = YL69_DEFAULT_CONFIG;
     cfg_YL69.channel = channel;
+    cfg_YL69.sensor_type = sensor_type;
     yl69_init(&cfg_YL69);
-    yl69_read_percentage(cfg_YL69.channel,humedad);
+    yl69_read_percentage(cfg_YL69.channel,humedad,cfg_YL69.sensor_type);
 } 
 
 static void sensorAmbiente(dht_sensor_type_t sensor_type,gpio_num_t pin, float *temperatura, float *humedad) {
@@ -49,8 +50,9 @@ static void task_sensores(void *pvParameters) {
         // Leer sensores
         sensorAmbiente(SENSOR_TYPE, GPIO_PIN1DHT, &sensor_data.temperature, &sensor_data.humidity);
 
-        sensorHumedadSuelo(CHANNEL1_Yl69, &sensor_data.humGroud1);
-        sensorHumedadSuelo(CHANNEL2_Yl69, &sensor_data.humGroud2);
+
+        sensorHumedadSuelo(CHANNEL1_Yl69, &sensor_data.humGroud1,TYPE_CAP);
+        sensorHumedadSuelo(CHANNEL2_Yl69, &sensor_data.humGroud2, TYPE_YL69);
 
         ESP_LOGI(TAG, "Lecturas: Suelo1=%d%%, Suelo2=%d%%, H=%.1f%%, T=%.1f°C",
                  sensor_data.humGroud1, sensor_data.humGroud2,
