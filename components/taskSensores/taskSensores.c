@@ -7,6 +7,8 @@
 #include "freertos/task.h"
 #include "dht.h"
 #include "yl69.h"
+#include "wifi.h"
+#include <string.h>
 
 static const char *TAG = "task_sensores";
 
@@ -44,8 +46,11 @@ static void sensorAmbiente(dht_sensor_type_t sensor_type,gpio_num_t pin, float *
 
 static void task_sensores(void *pvParameters) {
     tempHumidity_t sensor_data;
-    ESP_LOGI(TAG, "--------Lecturas----");
-    sensor_data.humGroud2 = 0; 
+    
+    // Obtener MAC address una sola vez al inicio
+    get_mac_address(sensor_data.mac_address);
+    strcpy(sensor_data.zona, CONFIG_ZONE);
+    
     while (1) {
         // Leer sensores
         sensorAmbiente(SENSOR_TYPE, GPIO_PIN1DHT, &sensor_data.temperature, &sensor_data.humidity);

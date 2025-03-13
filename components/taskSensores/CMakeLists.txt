@@ -6,4 +6,5 @@ idf_component_register(SRCS "taskSensores.c"
     REQUIRES "tempHumidity"
     REQUIRES "dht"
     REQUIRES "yl69"
+    REQUIRES "wifi"
 )
