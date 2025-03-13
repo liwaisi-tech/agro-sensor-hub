@@ -6,9 +6,9 @@
 
 
 #define VALUE_WHEN_DRY_CAP 2865  // Valor cuando el sensor Capacitio está seco
-#define VALUE_WHEN_WET_CAP 1220 // Valor cuando el sensor capacitivo está en agua
+#define VALUE_WHEN_WET_CAP 6 // Valor cuando el sensor capacitivo está en agua
 #define VALUE_WHEN_DRY_YL 3096  // Valor cuando el sensor YL está seco
-#define VALUE_WHEN_WET_YL 800 // Valor cuando el sensor YL está en agua
+#define VALUE_WHEN_WET_YL 2005 // Valor cuando el sensor YL está en agua
 #define HUMIDITY_MAX 100
 #define HUMIDITY_MIN 0
 
