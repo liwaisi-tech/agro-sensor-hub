@@ -5,8 +5,8 @@
 #include "freertos/task.h"
 
 
-#define VALUE_WHEN_DRY_CAP 2865  // Valor cuando el sensor Capacitio está seco
-#define VALUE_WHEN_WET_CAP 6 // Valor cuando el sensor capacitivo está en agua
+#define VALUE_WHEN_DRY_CAP 2512  // Valor cuando el sensor Capacitio está seco 2512
+#define VALUE_WHEN_WET_CAP 1202// Valor cuando el sensor capacitivo está en agua 1202
 #define VALUE_WHEN_DRY_YL 3096  // Valor cuando el sensor YL está seco
 #define VALUE_WHEN_WET_YL 2005 // Valor cuando el sensor YL está en agua
 #define HUMIDITY_MAX 100

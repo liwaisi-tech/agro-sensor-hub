@@ -56,7 +56,6 @@ dkms.conf
 sdkconfig.old
 *.DS_Store
 # Ignore build results
-*.projbuild
 build/
 build/log/
 # IAR Debug Obj

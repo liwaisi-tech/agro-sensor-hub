@@ -60,7 +60,7 @@ float calculate_humidity_average(const int *humidity_readings, size_t num_readin
  * @return true si algún valor está por debajo o es igual al umbral, false en caso contrario
  */
 bool is_any_humidity_below_threshold(tempHumidity_t *sensor_data) {
-    float reading_groud[NUM_SENSORS]; // Array para almacenar las lecturas de los 3 sensores
+    float reading_groud[CONFIG_NUM_SENSORS_SOIL]; // Cambiar a NUM_SENSORS_SOIL
     // Verificar que el puntero no sea nulo y que haya sensores
     if (sensor_data == NULL) {
         return false; // O manejar el error según sea necesario
@@ -68,7 +68,7 @@ bool is_any_humidity_below_threshold(tempHumidity_t *sensor_data) {
     reading_groud[0]= sensor_data->humGroud1;
     reading_groud[1] = sensor_data->humGroud2;
     // Validar cada uno de los valores de humedad
-    for (size_t i = 0; i < NUM_SENSORS; i++) {
+    for (size_t i = 0; i < CONFIG_NUM_SENSORS_SOIL; i++) { // Cambiar a NUM_SENSORS_SOIL
         if (reading_groud[i] <= HUMIDITY_LOW_THRESHOLD) {
             return true; // Retornar true si se encuentra un valor por debajo del umbral
         }
