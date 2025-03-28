@@ -1,0 +1,73 @@
+menu "Project Configuration"
+    menu "WiFi Configuration"
+        config ESP_WIFI_SSID
+            string "WiFi SSID"
+            default "myssid"
+            help
+                SSID (network name) for the example to connect to.
+
+        config ESP_WIFI_PASSWORD
+            string "WiFi Password"
+            default "mypassword"
+            help
+                WiFi password (WPA or WPA2) for the example to use.
+
+        config ESP_MAXIMUM_RETRY
+            int "Maximum retry"
+            default 5
+            help
+                Set the Maximum retry to avoid station reconnecting to the AP unlimited when the AP is really inexistent.
+    endmenu
+
+    menu "Server Configuration"
+        config SERVER_URL
+            string "Server Base URL"
+            default "http://example.com/api"
+            help
+                URL base del servidor para las peticiones HTTP.
+
+    endmenu
+
+    menu "Sensor Configuration"
+        config SENSOR_READ_INTERVAL
+            int "Sensor Reading Interval (milliseconds)"
+            default 30000
+            help
+                Intervalo de tiempo de lectura sensores en segundos.
+
+        config ZONE
+            string "Zone where the chip is located"
+            default "Zona"
+            help
+                Zona donde está ubicado el dispositivo.
+
+        config NUM_SENSORS_SOIL
+            int "Number of  Soil Sensors"
+            range 0 4
+            default 3
+            help
+                Número de sensores  de suelo a utilizar.
+
+        choice SOIL_SENSOR_TYPE
+            prompt "Type of soil moisture sensor"
+            default SOIL_SENSOR_TYPE_YL69
+            help
+                Seleccione el tipo de sensor de humedad del suelo a utilizar.
+
+            config SOIL_SENSOR_TYPE_YL69
+                bool "YL69 Sensor"
+                help
+                    Sensor resistivo YL69/HL69
+
+            config SOIL_SENSOR_TYPE_CAP
+                bool "Capacitive Sensor"
+                help
+                    Sensor capacitivo de humedad del suelo
+        endchoice
+
+        config SOIL_SENSOR_TYPE
+            int
+            default 0 if SOIL_SENSOR_TYPE_YL69
+            default 1 if SOIL_SENSOR_TYPE_CAP
+    endmenu
+endmenu 
