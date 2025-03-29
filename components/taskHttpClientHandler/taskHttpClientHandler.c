@@ -6,6 +6,7 @@
 #include "esp_http_client.h"
 #include "esp_system.h"
 #include <string.h>
+#include "wifi.h"
 
 static const char *TAG = "http_client";
 
@@ -68,7 +69,15 @@ static void http_client_task(void *pvParameters) {
     while (1) {
         if (xQueueReceive(queue_websocket, &sensor_data, portMAX_DELAY) == pdTRUE) {
             ESP_LOGI(TAG, "Enviando datos mediante HTTP...");
-            http_client_send_data(&sensor_data);
+            wifi_action_mode(true);
+            // Enviar datos
+            esp_err_t err = http_client_send_data(&sensor_data);
+            if (err != ESP_OK) {
+                ESP_LOGE(TAG, "Error al enviar datos,revise el server");
+            }
+
+            // Apagar WiFi después de enviar
+            wifi_action_mode(false); 
         }
     }
 }

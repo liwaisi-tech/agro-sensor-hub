@@ -5,4 +5,5 @@ idf_component_register(SRCS "taskHttpClientHandler.c"
     "queueManager"
     "tempHumidity"
     "esp_http_client"
+    "wifi"
 ) 

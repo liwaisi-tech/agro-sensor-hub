@@ -27,7 +27,7 @@ static esp_err_t init_wifi_and_services(void) {
     esp_err_t ret;
 
     // Inicializar WiFi primero
-    ret = wifi_init_sta();
+    ret = wifi_action_mode(true);
     if (ret != ESP_OK) {
         ESP_LOGE(TAG, "Failed to initialize WiFi");
         return ret;
