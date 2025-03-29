@@ -9,6 +9,7 @@
 #include "yl69.h"
 #include "wifi.h"
 #include <string.h>
+#include "esp_sleep.h"
 
 static const char *TAG = "task_sensores";
 
@@ -110,8 +111,6 @@ static void task_sensores(void *pvParameters) {
     get_mac_address(sensor_data.mac_address);
     strcpy(sensor_data.zona, CONFIG_ZONE);
     
-
-    
     while (1) {
         bool readings_valid = false;
 
@@ -119,7 +118,6 @@ static void task_sensores(void *pvParameters) {
         ret = read_dht_sensor(&sensor_data.temperature, &sensor_data.humidity);
         if (ret != ESP_OK) {
             ESP_LOGE(TAG, "Error en lectura del sensor DHT");
-            // No retornamos, continuamos con los sensores de suelo
         } else {
             readings_valid = true;
         }
@@ -144,7 +142,8 @@ static void task_sensores(void *pvParameters) {
         }
 
         // Esperar hasta el siguiente período
-        vTaskDelay(pdMS_TO_TICKS(SENSOR_READ_DELAY_MS));
+        esp_sleep_enable_timer_wakeup(SENSOR_READ_DELAY_MS * 1000); // Convertir a microsegundos
+        esp_deep_sleep_start(); // Entrar en modo de suspensión
     }
 }
 
