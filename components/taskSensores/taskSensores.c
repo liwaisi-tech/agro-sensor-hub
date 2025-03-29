@@ -28,8 +28,8 @@ typedef struct {
 
 // Canales ADC disponibles
 static const adc_channel_t AVAILABLE_ADC_CHANNELS[] = {
-    ADC_CHANNEL_4, ADC_CHANNEL_7,
-    ADC_CHANNEL_6, ADC_CHANNEL_5
+    ADC_CHANNEL_5, ADC_CHANNEL_4,
+    ADC_CHANNEL_7, ADC_CHANNEL_6
 };
 
 #define TOTAL_SENSORS CONFIG_NUM_SENSORS_SOIL
