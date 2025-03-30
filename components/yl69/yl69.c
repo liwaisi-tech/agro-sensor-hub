@@ -75,6 +75,15 @@ void yl69_read_percentage(adc_channel_t channel, int *humidity, groud_sensor_typ
         value_when_dry = VALUE_WHEN_DRY_CAP;
         value_when_wet = VALUE_WHEN_WET_CAP;
     }
-    *humidity = map_value(yl69_read_raw(channel),value_when_dry,value_when_wet);
+    *humidity = map_value(yl69_read_raw(channel),value_when_dry,value_when_wet); 
+    if (*humidity>100)
+    {
+       *humidity = 100; 
+    }
+    else if (*humidity<0)
+    {
+        *humidity =0;
+    }
+    
 }
 
