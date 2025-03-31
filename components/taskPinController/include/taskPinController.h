@@ -22,7 +22,7 @@ typedef struct {
 } pin_controller_t;
 
 // Función para iniciar la tarea
-esp_err_t init_pin_controller(void);
+void pin_control(tempHumidity_t *sensor_data);
 /**
  * @brief Inicializa el controlador del LED
  * @param controller Puntero a la estructura del controlador

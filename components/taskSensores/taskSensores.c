@@ -37,11 +37,9 @@ static const adc_channel_t AVAILABLE_ADC_CHANNELS[] = {
 
 // Cache de configuración de sensores
 static soil_sensor_config_t sensors_cache[TOTAL_SENSORS];
-static bool sensors_initialized = false;
 
 // Función para inicializar la configuración de los sensores
 static void init_soil_sensors_config(void) {
-    if (sensors_initialized) return;
     char sensor_name[32];
     
     for (int i = 0; i < TOTAL_SENSORS; i++) {
@@ -49,11 +47,8 @@ static void init_soil_sensors_config(void) {
         sensors_cache[i].type = CONFIG_SOIL_SENSOR_TYPE;
         snprintf(sensor_name, sizeof(sensor_name), "SensorSoil_%d", i+1);
         snprintf(sensors_cache[i].sensor_name, sizeof(sensor_name),"%s",sensor_name);
-    }
+    }   
 
-    ESP_LOGI(TAG, "Configurados los %d sensores de humedad de la tierra", TOTAL_SENSORS);
-    
-    sensors_initialized = true;
 }
 
 // Función para leer un sensor de suelo individual
@@ -72,17 +67,8 @@ static esp_err_t read_soil_sensor(const soil_sensor_config_t *config, int *humid
     return ESP_OK;
 }
 
-// Función para leer el sensor DHT
-static esp_err_t read_dht_sensor(float *temperature, float *humidity) {
-    esp_err_t ret = dht_read_float_data(SENSOR_TYPE, GPIO_PIN1DHT, humidity, temperature);
-    if (ret != ESP_OK) {
-        ESP_LOGE(TAG, "Error leyendo sensor DHT: %d", ret);
-    }
-    return ret;
-}
-
 // Función para leer todos los sensores de suelo
-static esp_err_t read_all_soil_sensors(tempHumidity_t *sensor_data) {
+esp_err_t read_all_soil_sensors(tempHumidity_t *sensor_data) {
     init_soil_sensors_config();  // Se asegura que los sensores estén inicializados
 
     int *humidity_values[] = {
@@ -97,71 +83,36 @@ static esp_err_t read_all_soil_sensors(tempHumidity_t *sensor_data) {
         if (ret != ESP_OK) return ret;
         
         // Pequeña pausa entre lecturas para evitar sobrecarga
-        vTaskDelay(pdMS_TO_TICKS(10));
+        vTaskDelay(pdMS_TO_TICKS(100));
     }
     return ESP_OK;
 }
 
-// Tarea principal de sensores
-static void task_sensores(void *pvParameters) {
-    tempHumidity_t sensor_data = {0};  // Inicializar a 0
+// Función para la tarea principal de sensores
+esp_err_t task_sensores(tempHumidity_t *sensor_data) {
+
     esp_err_t ret;
-    
+    vTaskDelay(pdMS_TO_TICKS(1000));
     // Configuración inicial
-    get_mac_address(sensor_data.mac_address);
-    strcpy(sensor_data.zona, CONFIG_ZONE);
-    
-    while (1) {
-        bool readings_valid = false;
-
-        // Leer sensor de ambiente
-        ret = read_dht_sensor(&sensor_data.temperature, &sensor_data.humidity);
-        if (ret != ESP_OK) {
-            ESP_LOGE(TAG, "Error en lectura del sensor DHT");
-        } else {
-            readings_valid = true;
-        }
-
-        // Leer sensores de suelo independientemente del resultado del DHT
-        ret = read_all_soil_sensors(&sensor_data);
-        if (ret == ESP_OK) {
-            readings_valid = true;
-            ESP_LOGI(TAG, "Lecturas de suelo: [%d,%d,%d,%d,%d,%d]%%",
-                     sensor_data.humGroud1, sensor_data.humGroud2,
-                     sensor_data.humGroud3, sensor_data.humGroud4,
-                     sensor_data.humGroud5, sensor_data.humGroud6);
-        } else {
-            ESP_LOGE(TAG, "Error en lectura de sensores de suelo");
-        }
-
-        // Solo enviamos a la cola si al menos una lectura fue exitosa
-        if (readings_valid) {
-            if (xQueueSend(queue_mediciones, &sensor_data, pdMS_TO_TICKS(100)) != pdTRUE) {
-                ESP_LOGW(TAG, "Cola llena - datos descartados");
-            }
-        }
-
-        // Esperar hasta el siguiente período
-        esp_sleep_enable_timer_wakeup(SENSOR_READ_DELAY_MS * 1000); // Convertir a microsegundos
-        esp_deep_sleep_start(); // Entrar en modo de suspensión
+    get_mac_address(sensor_data->mac_address);
+    strcpy(sensor_data->zona, CONFIG_ZONE);
+      // Pequeña pausa entre lecturas para evitar sobrecarga
+ 
+      // Leer sensor de ambiente
+    ret = dht_read_float_data(SENSOR_TYPE, GPIO_PIN1DHT, &sensor_data->humidity, &sensor_data->temperature);
+    if (ret != ESP_OK) {
+        ESP_LOGE(TAG, "Error leyendo sensor DHT: %d", ret);
     }
-}
+   vTaskDelay(pdMS_TO_TICKS(1000));
 
-esp_err_t init_task_sensores(void) {
-    BaseType_t res = xTaskCreate(
-        task_sensores,
-        "task_sensores",
-        TASK_SENSORES_STACK_SIZE,
-        NULL,
-        TASK_SENSORES_PRIORITY,
-        NULL
-    );
-
-    if (res != pdPASS) {
-        ESP_LOGE(TAG, "Error creando task_sensores");
-        return ESP_FAIL;
+    ret = read_all_soil_sensors(sensor_data);
+    if (ret == ESP_OK) {
+        ESP_LOGI(TAG, "Lecturas de suelo: [%d,%d,%d,%d]%%",
+                 sensor_data->humGroud1, sensor_data->humGroud2,
+                 sensor_data->humGroud3, sensor_data->humGroud4);
+    } else {
+        ESP_LOGE(TAG, "Error en lectura de sensores de suelo");
     }
 
-    ESP_LOGI(TAG, "Task sensores iniciada correctamente");
-    return ESP_OK;
+    return ret;
 }

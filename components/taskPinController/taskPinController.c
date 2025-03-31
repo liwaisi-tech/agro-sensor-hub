@@ -4,7 +4,6 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
-static const char *TAG = "task_pin_controller";
 
 #define NUM_SENSORS 2 // este va en el archivo de configuración
 #define PIN_CONTROLLER_STACK_SIZE 4096  // Define el tamaño de la pila
@@ -94,33 +93,9 @@ esp_err_t update_led_state(pin_controller_t *controller, tempHumidity_t *sensor_
     return ESP_OK;
 }
 
-static void pin_control_task(void *pvParameters) {
-    tempHumidity_t sensor_data; 
+void pin_control(tempHumidity_t *sensor_data) {
     pin_controller_t controller;
     pin_controller_config(&controller, led_pin);
-    while (1) {
-        if (xQueueReceive(queue_control_pines, &sensor_data, portMAX_DELAY) == pdTRUE) {
-            update_led_state(&controller, &sensor_data);
-        }
-    }
-}
-
-esp_err_t init_pin_controller(void) {
-    BaseType_t res = xTaskCreate(
-        pin_control_task,
-        "pin_control_task",
-        PIN_CONTROLLER_STACK_SIZE,
-        NULL,
-        PIN_CONTROLLER_PRIORITY,
-        NULL
-    );
-
-    if (res != pdPASS) {
-        ESP_LOGE(TAG, "Failed to create pin controller task");
-        return ESP_FAIL;
-    }
-
-    ESP_LOGI(TAG, "Pin controller task initialized successfully");
-    return ESP_OK;
+    update_led_state(&controller, sensor_data);
 }
 

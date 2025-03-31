@@ -15,7 +15,6 @@
 static const char *TAG = "wifi_station";
 static EventGroupHandle_t s_wifi_event_group;
 static int s_retry_num = 0;
-static bool wifi_initialized = false;
 
 static void event_handler(void* arg, esp_event_base_t event_base,
                          int32_t event_id, void* event_data)
@@ -38,7 +37,7 @@ static void event_handler(void* arg, esp_event_base_t event_base,
     }
 }
 
-static esp_err_t wifi_init_sta(void)
+esp_err_t wifi_init_sta(void)
 {
     esp_err_t ret = ESP_OK;
     s_wifi_event_group = xEventGroupCreate();
@@ -92,34 +91,6 @@ static esp_err_t wifi_init_sta(void)
     return ret;
 }
 
-esp_err_t wifi_action_mode(bool enable) {
-    esp_err_t ret = ESP_OK;
-
-    if (enable) {
-        if (!wifi_initialized) {
-            ret = wifi_init_sta();
-            if (ret != ESP_OK) {
-                ESP_LOGE(TAG, "Error al inicializar WiFi: %s", esp_err_to_name(ret));
-                return ret;
-            }
-
-            wifi_initialized = true;
-        } else {
-            ret = esp_wifi_start();
-            if (ret != ESP_OK) {
-                ESP_LOGE(TAG, "Error al encender WiFi: %s", esp_err_to_name(ret));
-                return ret;
-            }
-        }
-    } else {
-        ret = esp_wifi_stop();
-        if (ret != ESP_OK) {
-            ESP_LOGE(TAG, "Error al apagar WiFi: %s", esp_err_to_name(ret));
-            return ret;
-        }
-    }
-    return ret;
-}
 
 void get_mac_address(char* mac_str) {
     uint8_t mac[6];

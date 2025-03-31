@@ -7,6 +7,7 @@
 #include "esp_system.h"
 #include <string.h>
 #include "wifi.h"
+#include "esp_wifi.h"
 
 static const char *TAG = "http_client";
 
@@ -43,7 +44,7 @@ esp_err_t http_client_send_data(const tempHumidity_t *sensor_data) {
         esp_http_client_cleanup(client);
         return ESP_FAIL;
     }
-    ESP_LOGI(TAG, "JsonString: %s", post_data);
+    //ESP_LOGI(TAG, "JsonString: %s", post_data);
     
     esp_http_client_set_header(client, "Content-Type", "application/json");
     esp_http_client_set_post_field(client, post_data, strlen(post_data));
@@ -63,40 +64,13 @@ esp_err_t http_client_send_data(const tempHumidity_t *sensor_data) {
     return err;
 }
 
-static void http_client_task(void *pvParameters) {
-    tempHumidity_t sensor_data;
+void http_client_task(tempHumidity_t *sensor_data) {
 
-    while (1) {
-        if (xQueueReceive(queue_websocket, &sensor_data, portMAX_DELAY) == pdTRUE) {
-            ESP_LOGI(TAG, "Enviando datos mediante HTTP...");
-            wifi_action_mode(true);
-            // Enviar datos
-            esp_err_t err = http_client_send_data(&sensor_data);
-            if (err != ESP_OK) {
-                ESP_LOGE(TAG, "Error al enviar datos,revise el server");
-            }
-
-            // Apagar WiFi después de enviar
-            wifi_action_mode(false); 
-        }
+    ESP_LOGI(TAG, "Enviando datos mediante HTTP...");
+    // Enviar datos
+    esp_err_t err = http_client_send_data(sensor_data);
+    if (err != ESP_OK) {
+        ESP_LOGE(TAG, "Error al enviar datos, revise el server");
     }
+
 }
-
-esp_err_t init_http_client_handler(void) {
-    BaseType_t res = xTaskCreate(
-        http_client_task,
-        "http_client_task",
-        HTTP_CLIENT_STACK_SIZE,
-        NULL,
-        HTTP_CLIENT_PRIORITY,
-        NULL
-    );
-
-    if (res != pdPASS) {
-        ESP_LOGE(TAG, "Error al crear la tarea del cliente HTTP");
-        return ESP_FAIL;
-    }
-
-    ESP_LOGI(TAG, "Tarea del cliente HTTP inicializada correctamente");
-    return ESP_OK;
-} 

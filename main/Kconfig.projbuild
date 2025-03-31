@@ -29,11 +29,11 @@ menu "Project Configuration"
     endmenu
 
     menu "Sensor Configuration"
-        config SENSOR_READ_INTERVAL
-            int "Sensor Reading Interval (milliseconds)"
-            default 30000
+        config CONFIG_WAKE_UP_TIME
+            int "timer wakeup  (seconds)"
+            default 60
             help
-                Intervalo de tiempo de lectura sensores en segundos.
+                Tiempo de espera para activar el dispositivo en ligh mode.
 
         config ZONE
             string "Zone where the chip is located"

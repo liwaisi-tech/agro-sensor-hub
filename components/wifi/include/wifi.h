@@ -17,7 +17,7 @@
  *    - ESP_ERR_INVALID_STATE si ocurre un error inesperado
  */
 esp_err_t wifi_action_mode(bool enable);
-
+esp_err_t wifi_init_sta(void);
 void get_mac_address(char* mac_str);
 
 #endif /* _WIFI_H_ */
