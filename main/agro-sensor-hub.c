@@ -17,7 +17,7 @@
 static const char *TAG = "agro-sensor-hub";
 
 #define SENSOR_TYPE DHT_TYPE_AM2301
-#define GPIO_PIN1DHT 32
+#define GPIO_PIN1DHT 4
 
 // Variables RTC que persisten durante el deep sleep
 static RTC_DATA_ATTR struct timeval sleep_enter_time;

@@ -4,7 +4,7 @@
 #include "freertos/task.h"
 
 
-#define NUM_SENSORS 2 // este va en el archivo de configuración
+#define NUM_SENSORS CONFIG_NUM_SENSORS_SOIL // numero de sensores configurados
 #define PIN_CONTROLLER_STACK_SIZE 4096  // Define el tamaño de la pila
 #define PIN_CONTROLLER_PRIORITY 7         // Define la prioridad de la tarea
 
