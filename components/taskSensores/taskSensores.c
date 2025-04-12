@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include "taskSensores.h"
-#include "queueManager.h"
 #include "tempHumidity.h"
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
@@ -107,9 +106,9 @@ esp_err_t task_sensores(tempHumidity_t *sensor_data) {
 
     ret = read_all_soil_sensors(sensor_data);
     if (ret == ESP_OK) {
-        ESP_LOGI(TAG, "Lecturas de suelo: [%d,%d,%d,%d]%%",
+        /*ESP_LOGI(TAG, "Lecturas de suelo: [%d,%d,%d,%d]%%",
                  sensor_data->humGroud1, sensor_data->humGroud2,
-                 sensor_data->humGroud3, sensor_data->humGroud4);
+                 sensor_data->humGroud3, sensor_data->humGroud4);*/
     } else {
         ESP_LOGE(TAG, "Error en lectura de sensores de suelo");
     }

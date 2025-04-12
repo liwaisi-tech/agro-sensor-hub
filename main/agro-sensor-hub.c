@@ -1,7 +1,5 @@
 #include <stdio.h>
 #include "tempHumidity.h"
-#include "queueManager.h"
-#include "taskProcessor.h"
 #include "taskPinController.h"
 #include "taskHttpClientHandler.h"
 #include "taskSensores.h"
@@ -64,7 +62,7 @@ void app_main(void) {
     vTaskDelay(pdMS_TO_TICKS(100));
     esp_wifi_stop();
 // Configurar despertar por temporizador (60 segundos)
-    esp_sleep_enable_timer_wakeup(60 * 1000000);
+    esp_sleep_enable_timer_wakeup(CONFIG_WAKE_UP_TIME * 1000000);
    
     // Configurar el LED de alerta para mantener su estado durante el deep sleep
     

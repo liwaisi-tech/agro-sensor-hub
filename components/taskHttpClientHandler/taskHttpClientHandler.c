@@ -1,5 +1,4 @@
 #include "taskHttpClientHandler.h"
-#include "queueManager.h"
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -66,7 +65,7 @@ esp_err_t http_client_send_data(const tempHumidity_t *sensor_data) {
 
 void http_client_task(tempHumidity_t *sensor_data) {
 
-    ESP_LOGI(TAG, "Enviando datos mediante HTTP...");
+    //ESP_LOGI(TAG, "Enviando datos mediante HTTP...");
     // Enviar datos
     esp_err_t err = http_client_send_data(sensor_data);
     if (err != ESP_OK) {
